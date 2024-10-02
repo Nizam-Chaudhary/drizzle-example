@@ -1,8 +1,21 @@
-"use server";
+'use server';
 
-import { signIn as authSignIn } from "@/lib/auth";
+import { db } from '@/db';
+import { user } from '@/db/schema';
+import { UserSchema, userSchema } from '@/db/schema/user';
+import { executeAction } from '@/db/utils/executeAction';
+import { signIn as authSignIn } from '@/lib/auth';
 
-export async function signIn(data: unknown) {
-	await authSignIn("credentials", { redirectTo: "/" });
-	return { success: true, message: "Signed in successfully" };
+export async function signIn(data: UserSchema) {
+  return executeAction({
+    actionFn: async () => {
+      const validatedData = userSchema.parse(data);
+      if (validatedData.mode === 'signUp') {
+        await authSignIn('credentials', { ...validatedData, redirectTo: '/' });
+      }
+    },
+    isProtected: false,
+    clientSuccessMessage: 'Signed in successfully',
+    serverErrorMessage: 'signIn',
+  });
 }

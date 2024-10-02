@@ -1,45 +1,42 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
 
-import { wait } from "@/lib/utils";
+import { getUserByEmailAndPassword } from '@/app/sign-in/queries';
+import { wait } from '@/lib/utils';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-	providers: [
-		Credentials({
-			credentials: {
-				email: {},
-				password: {},
-			},
-			authorize: async (credentials) => {
-				await wait();
+  providers: [
+    Credentials({
+      credentials: {
+        email: {},
+        password: {},
+      },
+      authorize: async (credentials) => {
+        const dbUser = await getUserByEmailAndPassword(credentials);
 
-				return {
-					id: "1",
-					fullName: "mock full name",
-					age: 18,
-					password: "mock password",
-					email: "mock@mock.com",
-					createdAt: "2024-06-23 16:05:26.954952",
-					updatedAt: "2024-06-23 16:05:26.954952",
-				};
-			},
-		}),
-	],
-	callbacks: {
-		jwt({ token, user }) {
-			if (user) {
-				token.id = user.id;
-				// @ts-ignore
-				token.fullName = user.fullName;
-			}
-			return token;
-		},
-		session({ session, token }) {
-			// @ts-ignore
-			session.user.id = token.id;
-			// @ts-ignore
-			session.user.fullName = token.fullName;
-			return session;
-		},
-	},
+        if (!dbUser) {
+          throw new Error('User not found / Invalid credentials');
+        }
+
+        return { ...dbUser, id: dbUser.id.toString() };
+      },
+    }),
+  ],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        // @ts-ignore
+        token.fullName = user.fullName;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      // @ts-ignore
+      session.user.id = token.id;
+      // @ts-ignore
+      session.user.fullName = token.fullName;
+      return session;
+    },
+  },
 });

@@ -1,8 +1,22 @@
-"use server";
+'use server';
 
-import { wait } from "@/lib/utils";
+import { db } from '@/db';
+import { user, UserSchema, userSchema } from '@/db/schema/user';
+import { executeAction } from '@/db/utils/executeAction';
+import { eq } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 
-export async function updateUser(data: unknown) {
-	await wait();
-	return { success: true, message: "User updated successfully" };
+export async function updateUser(data: UserSchema) {
+  return executeAction({
+    actionFn: async () => {
+      const validatedData = userSchema.parse(data);
+      if (validatedData.mode === 'update') {
+        await db.update(user).set(data).where(eq(user.id, validatedData.id));
+        revalidatePath('/admin');
+      }
+    },
+    isProtected: true,
+    clientSuccessMessage: 'User updated successfully',
+    serverErrorMessage: 'updateUser',
+  });
 }
