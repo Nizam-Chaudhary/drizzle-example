@@ -25,7 +25,7 @@ export const post = pgTable('post', {
     .notNull()
     .references(() => category.id),
   createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
-  updatedAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
 });
 
 export const postRelations = relations(post, ({ one, many }) => ({

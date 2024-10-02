@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS "comment" (
 	"user_id" integer NOT NULL,
 	"content" text NOT NULL,
 	"post_id" integer NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "post" (
@@ -20,7 +21,8 @@ CREATE TABLE IF NOT EXISTS "post" (
 	"short_description" text,
 	"content" text NOT NULL,
 	"category_id" integer NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "post_to_tag" (
@@ -41,7 +43,8 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"age" integer NOT NULL,
 	"password" varchar(255) NOT NULL,
 	"email" varchar(255) NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 DO $$ BEGIN

@@ -1,5 +1,7 @@
 import { relations } from 'drizzle-orm';
 import { integer, pgTable, primaryKey } from 'drizzle-orm/pg-core';
+import { createInsertSchema } from 'drizzle-zod';
+import { z } from 'zod';
 import { post } from './post';
 import { tag } from './tag';
 
@@ -28,3 +30,6 @@ export const postTagsRelations = relations(postTags, ({ one }) => ({
     references: [post.id],
   }),
 }));
+
+export const postTagsSchema = createInsertSchema(postTags);
+export type PostTagsSchema = z.infer<typeof postTagsSchema>;
